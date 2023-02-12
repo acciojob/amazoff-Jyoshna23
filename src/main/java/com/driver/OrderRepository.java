@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class OrderRepository {
@@ -45,8 +44,13 @@ public class OrderRepository {
         int num = partnersMap.get(partnerId).getNumberOfOrders();
         num += 1;
         partnersMap.get(partnerId).setNumberOfOrders(num);
-        partnerOrdersMap.get(partnerId).add(orderId);
-        unassignedOrders.remove(orderId);
+
+        List<String> orders = partnerOrdersMap.get(partnerId);
+        orders.add(orderId);
+        partnerOrdersMap.put(partnerId, orders);
+
+        if (unassignedOrders.contains(orderId))
+            unassignedOrders.remove(orderId);
 
     }
 
@@ -127,9 +131,9 @@ public class OrderRepository {
         int minutes = lastDelivery % 60;
 
         if (hour < 10) time += "0" + hour;
-        else time += hour;
+        else time += "" + hour;
         time += ":";
-        time += minutes;
+        time += "" + minutes;
         return time;
     }
 
@@ -151,6 +155,8 @@ public class OrderRepository {
 
         //Delete an order and also
         // remove it from the assigned order of that partnerId
+        if (!ordersMap.containsKey(orderId)) return;
+
         ordersMap.remove(orderId);
 
         for (String id : partnerOrdersMap.keySet()) {
