@@ -86,10 +86,13 @@ public class OrderRepository {
     }
 
     public List<String> getAllOrders() {
+        if (allOrders.isEmpty()) return new ArrayList<>();
+
         return allOrders;
     }
 
     public Integer getCountOfUnassignedOrders(){
+        if(unassignedOrders.isEmpty()) return 0;
         Integer countOfOrders = unassignedOrders.size();
 
         return countOfOrders;
@@ -134,6 +137,8 @@ public class OrderRepository {
 
         //Delete the partnerId
         //And push all his assigned orders to unassigned orders.
+        if (!partnersMap.containsKey(partnerId)) return;
+
         partnersMap.remove(partnerId);
         List<String> orders = partnerOrdersMap.get(partnerId);
         partnerOrdersMap.remove(partnerId);
