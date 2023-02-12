@@ -27,7 +27,7 @@ public class OrderRepository {
     public String addOrder(Order order){
         String id = order.getId();
         orderMap.put(id,order);
-        unassigned.add(order.getId());
+        unassigned.add(id);
         return "order added successfully";
     }
 
@@ -39,7 +39,7 @@ public class OrderRepository {
     }
 
     public String addOrderPartnerPair(String orderId,String partnerId){
-
+        unassigned.remove(orderId);
         if(!ordersToPartnerMap.containsKey(partnerId)){
             ordersToPartnerMap.put(partnerId,new ArrayList<>());
 
@@ -47,13 +47,19 @@ public class OrderRepository {
             List<String> order = ordersToPartnerMap.get(partnerId);
             order.add(orderId);
             ordersToPartnerMap.put(partnerId,order );
-            unassigned.remove(orderId);
+
 
             return "added order to partner";
     }
 
     public Order getOrderById(String orderId){
-            return orderMap.get(orderId);
+        Order order = new Order();
+        for(String id : orderMap.keySet()) {
+            if (id.equals(orderId)) {
+                order = orderMap.get(id);
+            }
+        }
+        return order;
     }
 
     public DeliveryPartner getPartnerById(String partnerId){
@@ -67,7 +73,13 @@ public class OrderRepository {
     }
 
     public List<String> getOrdersByPartnerId(String partnerId){
-        List<String> order = ordersToPartnerMap.get(partnerId);
+        List<String> order = new ArrayList<>();
+        for(String id : ordersToPartnerMap.keySet()){
+            if(id.equals(partnerId)){
+                 order = ordersToPartnerMap.get(partnerId);
+            }
+        }
+
         return order;
     }
 
@@ -80,6 +92,7 @@ public class OrderRepository {
     }
 
     public Integer getCountOfUnassignedOrders(){
+
         return unassigned.size();
     }
 
