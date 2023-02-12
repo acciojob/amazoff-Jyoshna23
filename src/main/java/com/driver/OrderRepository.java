@@ -25,19 +25,21 @@ public class OrderRepository {
         this.unassignedOrders = new ArrayList<>();
     }
 
-    public void addOrder(Order order) {
+    public String addOrder(Order order) {
         String id = order.getId();
         allOrders.add(id);
         unassignedOrders.add(id);
         ordersMap.put(id, order);
+        return "New order added successfully";
     }
 
-    public void addPartner(@PathVariable String partnerId) {
+    public String addPartner(@PathVariable String partnerId) {
         DeliveryPartner deliveryPartner = new DeliveryPartner(partnerId);
         partnersMap.put(partnerId, deliveryPartner);
+        return "New delivery partner added successfully";
     }
 
-    public void addOrderPartnerPair(String orderId, String partnerId) {
+    public String addOrderPartnerPair(String orderId, String partnerId) {
         if (!partnerOrdersMap.containsKey(partnerId)) {
             partnerOrdersMap.put(partnerId, new ArrayList<>());
         }
@@ -52,10 +54,15 @@ public class OrderRepository {
         if (unassignedOrders.contains(orderId))
             unassignedOrders.remove(orderId);
 
+        return "New order-partner pair added successfully";
+
     }
 
     public Order getOrderById(@PathVariable String orderId) {
 
+        if (!ordersMap.containsKey(orderId)) {
+            System.out.println("order not present");
+        }
         Order order = ordersMap.get(orderId);
         //order should be returned with an orderId.
 
@@ -97,65 +104,90 @@ public class OrderRepository {
 
     public Integer getCountOfUnassignedOrders(){
         if(unassignedOrders.isEmpty()) return 0;
-        Integer countOfOrders = unassignedOrders.size();
+        Integer countOfOrders = 0;
+        try {
+            countOfOrders = unassignedOrders.size();
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
 
         return countOfOrders;
     }
 
     public Integer getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId){
-        String[] arr = time.split(":");
-        String hour = arr[0];
-        String minutes = arr[1];
-        int givenTime = Integer.parseInt(hour) * 60 + Integer.parseInt(minutes);
-        List<String> orders = partnerOrdersMap.get(partnerId);
         int undelivered = 0;
+        try {
+            String[] arr = time.split(":");
+            String hour = arr[0];
+            String minutes = arr[1];
+            int givenTime = Integer.parseInt(hour) * 60 + Integer.parseInt(minutes);
+            List<String> orders = partnerOrdersMap.get(partnerId);
+//            int undelivered = 0;
 
-        for (String id : orders) {
-            Order order = ordersMap.get(id);
-            if (order.getDeliveryTime() > givenTime) undelivered++;
+            for (String id : orders) {
+                Order order = ordersMap.get(id);
+                if (order.getDeliveryTime() > givenTime) undelivered++;
+            }
+        }
+        catch(Exception e) {
+            System.out.println(e);
         }
         return undelivered;
     }
 
     public String getLastDeliveryTimeByPartnerId( String partnerId){
         String time = "";
-        List<String> orders = partnerOrdersMap.get(partnerId);
-        int lastDelivery = Integer.MIN_VALUE;
+        try {
+            List<String> orders = partnerOrdersMap.get(partnerId);
+            int lastDelivery = Integer.MIN_VALUE;
 
-        for (String id : orders) {
-            Order order = ordersMap.get(id);
-            if (order.getDeliveryTime() > lastDelivery) lastDelivery = order.getDeliveryTime();
+            for (String id : orders) {
+                Order order = ordersMap.get(id);
+                if (order.getDeliveryTime() > lastDelivery) lastDelivery = order.getDeliveryTime();
+            }
+            //Return the time when that partnerId will deliver his last delivery order.
+            int hour = lastDelivery / 60;
+            int minutes = lastDelivery % 60;
+
+            if (hour < 10) time += "0" + hour;
+            else time += "" + hour;
+            time += ":";
+            if (minutes == 0) time += "00";
+            time += "" + minutes;
         }
-        //Return the time when that partnerId will deliver his last delivery order.
-        int hour = lastDelivery / 60;
-        int minutes = lastDelivery % 60;
-
-        if (hour < 10) time += "0" + hour;
-        else time += "" + hour;
-        time += ":";
-        time += "" + minutes;
+        catch(Exception e) {
+            String r = e.toString();
+            return r;
+        }
         return time;
     }
 
-    public void deletePartnerById(String partnerId){
+    public String deletePartnerById(String partnerId){
 
         //Delete the partnerId
         //And push all his assigned orders to unassigned orders.
-        if (!partnersMap.containsKey(partnerId)) return;
+        if (!partnersMap.containsKey(partnerId)) return "";
 
-        partnersMap.remove(partnerId);
-        List<String> orders = partnerOrdersMap.get(partnerId);
-        partnerOrdersMap.remove(partnerId);
-        for (String id : orders) {
-            unassignedOrders.add(id);
+        try {
+            partnersMap.remove(partnerId);
+            List<String> orders = partnerOrdersMap.get(partnerId);
+            partnerOrdersMap.remove(partnerId);
+            for (String id : orders) {
+                unassignedOrders.add(id);
+            }
         }
+        catch(Exception e) {
+            return e.toString();
+        }
+        return "removed successfully";
     }
 
-    public void deleteOrderById(String orderId){
+    public String deleteOrderById(String orderId){
 
         //Delete an order and also
         // remove it from the assigned order of that partnerId
-        if (!ordersMap.containsKey(orderId)) return;
+        if (!ordersMap.containsKey(orderId)) return "";
 
         ordersMap.remove(orderId);
 
@@ -167,7 +199,7 @@ public class OrderRepository {
                 break;
             }
         }
-
+        return "removed successfully";
     }
 }
 

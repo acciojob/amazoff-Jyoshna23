@@ -18,27 +18,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("orders")
+@RequestMapping("/orders")
 public class OrderController {
 
     OrderService orderService = new OrderService();
     @PostMapping("/add-order")
-    public ResponseEntity<String> addOrder(@RequestBody Order order){
-        orderService.addOrder(order);
-        return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
+    public ResponseEntity<String> addOrder(@RequestBody Order order) {
+        String response = orderService.addOrder(order);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/add-partner/{partnerId}")
     public ResponseEntity<String> addPartner(@PathVariable("partnerId") String partnerId){
-        orderService.addPartner(partnerId);
-        return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
+        String response = orderService.addPartner(partnerId);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/add-order-partner-pair")
     public ResponseEntity<String> addOrderPartnerPair(@RequestParam("orderId") String orderId, @RequestParam("partnerId") String partnerId){
-        orderService.addOrderPartnerPair(orderId, partnerId);
+        String response = orderService.addOrderPartnerPair(orderId, partnerId);
         //This is basically assigning that order to that partnerId
-        return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/get-order-by-id/{orderId}")
@@ -117,20 +117,20 @@ public class OrderController {
 
     @DeleteMapping("/delete-partner-by-id/{partnerId}")
     public ResponseEntity<String> deletePartnerById(@PathVariable("partnerId") String partnerId){
-        orderService.deletePartnerById(partnerId);
+        String response = orderService.deletePartnerById(partnerId);
         //Delete the partnerId
         //And push all his assigned orders to unassigned orders.
 
-        return new ResponseEntity<>(partnerId + " removed successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(partnerId + response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete-order-by-id/{orderId}")
     public ResponseEntity<String> deleteOrderById(@PathVariable("orderId") String orderId){
-        orderService.deleteOrderById(orderId);
+        String response = orderService.deleteOrderById(orderId);
         //Delete an order and also
         // remove it from the assigned order of that partnerId
 
-        return new ResponseEntity<>(orderId + " removed successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(orderId + response, HttpStatus.CREATED);
     }
 }
 
