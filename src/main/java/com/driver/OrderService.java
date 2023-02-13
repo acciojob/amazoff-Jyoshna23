@@ -11,17 +11,17 @@ import java.util.List;
 public class OrderService {
 
     OrderRepository orderRepository = new OrderRepository();
-    public String addOrder(Order order){
-        return orderRepository.addOrder(order);
+    public void addOrder(Order order){
+        orderRepository.addOrder(order);
     }
 
-    public String addPartner(String partnerId){
-        return orderRepository.addPartner(partnerId);
+    public void addPartner(String partnerId){
+        orderRepository.addPartner(partnerId);
     }
 
-    public String addOrderPartnerPair(String orderId, String partnerId) {
+    public void addOrderPartnerPair(String orderId, String partnerId) {
 
-        return orderRepository.addOrderPartnerPair(orderId, partnerId);
+        orderRepository.addOrderPartnerPair(orderId, partnerId);
         //This is basically assigning that order to that partnerId
     }
 
@@ -62,12 +62,12 @@ public class OrderService {
         return orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
     }
 
-    public String deletePartnerById(String partnerId){
-        return orderRepository.deletePartnerById(partnerId);
+    public void deletePartnerById(String partnerId){
+        orderRepository.deletePartnerById(partnerId);
     }
 
-    public String deleteOrderById( String orderId){
-        return orderRepository.deleteOrderById(orderId);
+    public void deleteOrderById( String orderId){
+        orderRepository.deleteOrderById(orderId);
     }
 }
 
