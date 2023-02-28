@@ -48,28 +48,18 @@ public class OrderRepository {
 
     public Order getOrderById(@PathVariable String orderId) {
 
-//        if (ordersMap.containsKey(orderId)) {
-            Order order = ordersMap.get(orderId);
-            //order should be returned with an orderId.
-            return order;
-//        }
+           return ordersMap.get(orderId);
     }
 
     public DeliveryPartner getPartnerById(String partnerId) {
-
-//        if (partnersMap.containsKey(partnerId)) {
-            DeliveryPartner deliveryPartner = partnersMap.get(partnerId);
-            //deliveryPartner should contain the value given by partnerId
-            return deliveryPartner;
-//        }
-
+        return partnersMap.get(partnerId);
     }
 
     public Integer getOrderCountByPartnerId(String partnerId) {
 
         Integer orderCount = 0;
-        if (partnerOrdersMap.containsKey(partnerId)) {
-            orderCount = partnerOrdersMap.get(partnerId).size();
+        if (partnersMap.containsKey(partnerId)) {
+            orderCount = partnersMap.get(partnerId).getNumberOfOrders();
         }
         //orderCount should denote the orders given by a partner-id
         return orderCount;
@@ -77,16 +67,16 @@ public class OrderRepository {
 
     public List<String> getOrdersByPartnerId(String partnerId) {
 
-        HashSet<String> orders = partnerOrdersMap.get(partnerId);
-
-        //orders should contain a list of orders by PartnerId
-
-        return new ArrayList<>(orders);
+        HashSet<String> orderList = new HashSet<>();
+        if(partnerOrdersMap.containsKey(partnerId)) orderList = partnerOrdersMap.get(partnerId);
+        return new ArrayList<>(orderList);
     }
 
     public List<String> getAllOrders() {
-        if (allOrders.isEmpty()) return new ArrayList<>();
-
+        List<String> allOrders = new ArrayList<>();
+        for(String order : ordersMap.keySet()){
+            allOrders.add(order);
+        }
         return allOrders;
     }
 
